@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ER:LC Staff Panel</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        New York Lake City Roleplay
+        <span>Website</span>
+    </div>
+
+    <div class="menu">
+
+        <a class="active" href="/">
+            Dashboard
+        </a>
+
+        <a href="/staff">
+            Staff Panel
+        </a>
+
+        <a href="/staff-online">
+            Staff Online
+        </a>
+
+        <a href="/server">
+            Server
+        </a>
+
+        <a href="/logs">
+            Logs
+        </a>
+
+    </div>
+
+    <div class="bottom-menu">
+
+        <a href="#">
+            Join Discord
+        </a>
+
+        <a href="#">
+            Join Game
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+        <div>
+            <h1>Dashboard</h1>
+            <p>ER:LC Staff Management System</p>
+        </div>
+
+        <div class="status">
+            <span></span>
+            Server Online
+        </div>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Players Online</h3>
+            <strong>0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Staff Online</h3>
+            <strong>0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Pending Applications</h3>
+            <strong>0</strong>
+        </div>
+
+        <div class="card">
+            <h3>Server Status</h3>
+            <strong class="online">ONLINE</strong>
+        </div>
+
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div class="content-grid">
+
+
+        <!-- STAFF ONLINE -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>Staff Online</h2>
+
+            </div>
+
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    👥
+                </div>
+
+                <h3>No Staff Online</h3>
+
+                <p>
+                    Staff members currently online will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- SERVER CODE -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>Server Code</h2>
+
+            </div>
+
+
+            <div class="server-code" id="serverCode">
+                nyclrp
+            </div>
+
+
+            <button
+                class="copy-button"
+                onclick="copyServerCode()"
+            >
+                Copy Server Code
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECENT LOGS -->
+
+    <div class="panel logs">
+
+        <div class="panel-header">
+
+            <h2>Recent Logs</h2>
+
+        </div>
+
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📜
+            </div>
+
+            <h3>No Recent Logs</h3>
+
+            <p>
+                Server and staff activity will appear here.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function copyServerCode() {
+
+    const code = document.getElementById("serverCode").innerText;
+
+    navigator.clipboard.writeText(code);
+
+    alert("Server code copied!");
+
+}
+
+</script>
+
+
+</body>
+</html>
