@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Staff Online - ER:LC Staff Panel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        ER:LC <span>STAFF PANEL</span>
+    </div>
+
+    <div class="menu">
+        <a href="index.html">Dashboard</a>
+        <a href="staff.html">Staff Panel</a>
+        <a class="active" href="staff_online.html">Staff Online</a>
+        <a href="server.html">Server</a>
+        <a href="logs.html">Logs</a>
+    </div>
+
+    <div class="bottom-menu">
+        <a href="https://discord.gg/nyclrp" target="_blank" rel="noopener noreferrer">
+            Join Discord
+        </a>
+
+        <a href="https://policeroleplay.community/join?code=nyclrp"
+           target="_blank"
+           rel="noopener noreferrer">
+            Join Game
+        </a>
+    </div>
+
+</div>
+
+
+<div class="main">
+
+    <div class="topbar">
+
+        <div>
+            <h1>Staff Online</h1>
+            <p>
+                Current ER:LC staff members and their Discord status.
+            </p>
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Staff System Online
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2>Staff Members</h2>
+            <span id="staff-count">Loading...</span>
+        </div>
+
+        <div class="staff-list" id="staff-list">
+
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+
+                <h3>Loading staff members...</h3>
+
+                <p>
+                    Please wait while the staff list is loaded.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const STAFF_FILE = "staff.json";
+
+const staffList = document.getElementById("staff-list");
+const staffCount = document.getElementById("staff-count");
+
+
+function escapeHTML(value) {
+
+    const div = document.createElement("div");
+
+    div.textContent = value ?? "";
+
+    return div.innerHTML;
+}
+
+
+function getInitial(displayName, username) {
+
+    const name = displayName || username || "?";
+
+    return name.charAt(0).toUpperCase();
+}
+
+
+function getStatusHTML(status) {
+
+    switch (String(status || "").toLowerCase()) {
+
+        case "online":
+            return `
+                <span class="online-dot"></span>
+                <span>Online</span>
+            `;
+
+        case "idle":
+            return `
+                <span class="idle-dot"></span>
+                <span>Idle</span>
+            `;
+
+        case "dnd":
+            return `
+                <span class="dnd-dot"></span>
+                <span>Do Not Disturb</span>
+            `;
+
+        default:
+            return `
+                <span class="offline-dot"></span>
+                <span>Offline</span>
+            `;
+    }
+}
+
+
+function renderStaff(members) {
+
+    if (!Array.isArray(members)) {
+        members = [];
+    }
+
+    staffCount.textContent =
+        `${members.length} staff member${members.length === 1 ? "" : "s"}`;
+
+
+    if (members.length === 0) {
+
+        staffList.innerHTML = `
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    👥
+                </div>
+
+                <h3>
+                    No staff members found
+                </h3>
+
+                <p>
+                    Members with the "New York City Staff"
+                    Discord role will appear here automatically.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    staffList.innerHTML = members.map(member => {
+
+        const displayName =
+            member.display_name ||
+            member.username ||
+            "Unknown User";
+
+        const username =
+            member.username ||
+            "unknown";
+
+
+        const avatar = member.avatar
+            ? `
+                <img
+                    class="staff-avatar-image"
+                    src="${escapeHTML(member.avatar)}"
+                    alt="${escapeHTML(displayName)}"
+                >
+            `
+            : `
+                <div class="staff-avatar">
+                    ${escapeHTML(getInitial(displayName, username))}
+                </div>
+            `;
+
+
+        return `
+            <div class="staff-member">
+
+                ${avatar}
+
+                <div class="staff-info">
+
+                    <h3>
+                        ${escapeHTML(displayName)}
+                    </h3>
+
+                    <p>
+                        @${escapeHTML(username)}
+                    </p>
+
+                </div>
+
+
+                <div class="staff-rank">
+
+                    <span>
+                        New York City Staff
+                    </span>
+
+                </div>
+
+
+                <div class="staff-status">
+                    ${getStatusHTML(member.status)}
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+}
+
+
+async function loadStaff() {
+
+    try {
+
+        const response = await fetch(
+            `${STAFF_FILE}?t=${Date.now()}`,
+            {
+                cache: "no-store"
+            }
+        );
+
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+
+        const data = await response.json();
+
+        renderStaff(data.members);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load staff.json:",
+            error
+        );
+
+
+        staffCount.textContent =
+            "Connection error";
+
+
+        staffList.innerHTML = `
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Unable to load staff
+                </h3>
+
+                <p>
+                    The staff data could not be loaded.
+                    Please try again later.
+                </p>
+
+            </div>
+        `;
+    }
+}
+
+
+/* Initial load */
+loadStaff();
+
+
+/* Refresh every 60 seconds */
+setInterval(loadStaff, 60000);
+
+</script>
+
+</body>
+</html>
